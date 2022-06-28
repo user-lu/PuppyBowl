@@ -1,4 +1,4 @@
-import { fetchAllPlayers, fetchSinglePlayer } from './ajaxHelpers';
+import { removePlayer, addNewPlayer, fetchAllPlayers, fetchSinglePlayer } from './ajaxHelpers';
 
 const playerContainer = document.getElementById('all-players-container');
 const newPlayerFormContainer = document.getElementById('new-player-form');
@@ -22,7 +22,8 @@ export const renderAllPlayers = (playerList) => {
         </div>
         <img src="${pup.imageUrl}" alt="photo of ${pup.name} the puppy">
         <button class="detail-button" data-id=${pup.id}>See details</button>
-      </div>
+        <button class="remove-button" data-id=${pup.id}>Remove</button>
+        </div>
     `;
     playerContainerHTML += pupHTML;
   }
@@ -41,6 +42,17 @@ export const renderAllPlayers = (playerList) => {
         console.log(fetchSP)
         renderSinglePlayer(fetchSP)
     });
+  }
+
+    let removeButtons = [...document.getElementsByClassName('remove-button')];
+    for (let i = 0; i < removeButtons.length; i++) {
+      const removeButtonElement = removeButtons[i];
+      removeButtonElement.addEventListener('click', async () => {
+          await removePlayer(removeButtonElement.dataset.id);
+          const players = await fetchAllPlayers ();
+          renderAllPlayers(players);
+      });
+
   }
 };
 
@@ -88,7 +100,14 @@ export const renderNewPlayerForm = () => {
 
   let form = document.querySelector('#new-player-form > form');
   form.addEventListener('submit', async (event) => {
-    /*
-    */
+    event.preventDefault();
+    let playerData = {
+      name: form.elements.name.value,
+      breed: form.elements.breed.value
+    }
+    console.log(playerData.name)
+    await addNewPlayer(playerData)
+    const seeNewPlayers = await fetchAllPlayers();
+    renderAllPlayers(seeNewPlayers);
   });
 };

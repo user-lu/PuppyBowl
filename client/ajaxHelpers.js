@@ -31,9 +31,37 @@ export const fetchSinglePlayer = async (playerId) => {
 
 
 export const addNewPlayer = async (playerObj) => {
-
+    try {
+    const responseTwo = await fetch(
+      `${APIURL}/players`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify (playerObj),
+      }
+    );
+    const newPlayerAdd = await responseTwo.json();
+    return newPlayerAdd.data.players
+    }
+    catch (err) {
+        console.log ('Uh oh, trouble fetching player!', err)
+    }
 };
 
 export const removePlayer = async (playerId) => {
-
-};
+        try {
+         const responseThree = await fetch(`${APIURL}/players/${playerId}`, {
+           method: 'DELETE',
+         });
+         const resultThree = await responseThree.json();
+         if (resultThree.error) throw resultThree.error;
+         return;
+        } catch (err) {
+         console.error(
+           `Whoops, trouble removing player #${playerId} from the roster!`,
+           err
+         );
+        }
+    };
